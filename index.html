@@ -1,0 +1,2780 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Business Empire</title>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100%;
+      overflow-x: hidden;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    .mobile-container {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 10px;
+      min-height: 100%;
+      position: relative;
+    }
+
+    .top-bar {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .game-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1a202c;
+      margin: 0 0 5px 0;
+      text-align: center;
+    }
+
+    .company-name {
+      font-size: 14px;
+      color: #667eea;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .stat-mini {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 12px 8px;
+      border-radius: 12px;
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+
+    .stat-mini-label {
+      font-size: 10px;
+      opacity: 0.9;
+      margin-bottom: 2px;
+    }
+
+    .stat-mini-value {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .prestige-indicator {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #f6ad55;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .city-selector {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .city-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 8px;
+    }
+
+    .city-card {
+      background: #f7fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 12px;
+      position: relative;
+    }
+
+    .city-card.active {
+      background: #667eea;
+      color: white;
+      border-color: #5a67d8;
+      transform: scale(1.05);
+    }
+
+    .city-card:active {
+      transform: scale(0.95);
+    }
+
+    .city-emoji {
+      font-size: 20px;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .city-development {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      font-size: 8px;
+      background: #48bb78;
+      color: white;
+      border-radius: 4px;
+      padding: 1px 3px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid #e2e8f0;
+      padding: 10px;
+      z-index: 100;
+    }
+
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 5px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      padding: 8px 4px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      font-size: 10px;
+      color: #4a5568;
+      position: relative;
+    }
+
+    .nav-btn.active {
+      background: #667eea;
+      color: white;
+    }
+
+    .nav-btn:active {
+      transform: scale(0.9);
+    }
+
+    .nav-icon {
+      font-size: 20px;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: #f56565;
+      color: white;
+      border-radius: 50%;
+      width: 12px;
+      height: 12px;
+      font-size: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .content-area {
+      padding-bottom: 80px;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 500px;
+      max-height: 80%;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease-out;
+    }
+
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid #e2e8f0;
+      position: sticky;
+      top: 0;
+      background: white;
+      border-radius: 20px 20px 0 0;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a202c;
+      margin: 0;
+      text-align: center;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: #f7fafc;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .card {
+      background: #f7fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 15px;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .card:active {
+      transform: scale(0.98);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a202c;
+    }
+
+    .card-badge {
+      background: #667eea;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .card-info {
+      font-size: 13px;
+      color: #4a5568;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+      text-align: center;
+      position: relative;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-success {
+      background: #48bb78;
+      color: white;
+    }
+
+    .btn-warning {
+      background: #ed8936;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #f56565;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #4a5568;
+    }
+
+    .btn-prestige {
+      background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+      color: white;
+    }
+
+    .loading-btn {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .investment-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .investment-card {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 15px;
+      border-radius: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .investment-card:active {
+      transform: scale(0.95);
+    }
+
+    .investment-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .investment-name {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .investment-yield {
+      font-size: 10px;
+      opacity: 0.9;
+    }
+
+    .risk-indicator {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .risk-low { background: #48bb78; }
+    .risk-medium { background: #ed8936; }
+    .risk-high { background: #f56565; }
+
+    .market-indicator {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      font-size: 12px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #718096;
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a202c;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 25px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      animation: toastSlide 0.3s ease-out;
+      z-index: 2000;
+      max-width: 90%;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.3s ease;
+    }
+
+    .floating-btn {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+      z-index: 99;
+      transition: all 0.2s;
+    }
+
+    .floating-btn:active {
+      transform: scale(0.9);
+    }
+
+    .skill-tree {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .skill-node {
+      background: #f7fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 15px;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .skill-node.unlocked {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      color: white;
+      border-color: #38a169;
+    }
+
+    .skill-node.available {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .staff-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .staff-card {
+      background: #f7fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .staff-card.hired {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      color: white;
+      border-color: #38a169;
+    }
+
+    .event-card {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 15px;
+      animation: eventPulse 2s infinite;
+    }
+
+    .loan-card {
+      background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+      color: white;
+    }
+
+    .research-card {
+      background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
+      color: white;
+    }
+
+    .competitor-card {
+      background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+      color: white;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    @keyframes toastSlide {
+      from { 
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    @keyframes eventPulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(240, 147, 251, 0.3); }
+      50% { box-shadow: 0 8px 30px rgba(240, 147, 251, 0.6); }
+    }
+
+    .achievement-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 20px;
+      text-align: center;
+      z-index: 2000;
+      animation: achievementPop 0.5s ease-out;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes achievementPop {
+      0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+      50% { transform: translate(-50%, -50%) scale(1.1); }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ffffff40;
+      border-radius: 50%;
+      border-top-color: #ffffff;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .mini-game {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .tap-area {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    .tap-area:active {
+      transform: scale(0.9);
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .leaderboard {
+      background: #f7fafc;
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .leaderboard-item:last-child {
+      border-bottom: none;
+    }
+
+    .seasonal-banner {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      text-align: center;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      animation: seasonalGlow 3s infinite;
+    }
+
+    @keyframes seasonalGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(240, 147, 251, 0.3); }
+      50% { box-shadow: 0 0 30px rgba(240, 147, 251, 0.6); }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="mobile-container">
+   <div class="top-bar">
+    <div class="game-title" id="game-title">
+     Mobile Business Empire
+    </div>
+    <div class="company-name" id="company-name">
+     Global Dynamics Corp
+    </div>
+    <div class="stats-row">
+     <div class="stat-mini">
+      <div class="stat-mini-label">
+       💰 Cash
+      </div>
+      <div class="stat-mini-value" id="cash">
+       $25K
+      </div>
+      <div class="prestige-indicator" id="prestige-level" style="display: none;">
+       0
+      </div>
+     </div>
+     <div class="stat-mini">
+      <div class="stat-mini-label">
+       📈 Income
+      </div>
+      <div class="stat-mini-value" id="income">
+       $0/s
+      </div>
+     </div>
+     <div class="stat-mini">
+      <div class="stat-mini-label">
+       🏆 Level
+      </div>
+      <div class="stat-mini-value" id="player-level">
+       1
+      </div>
+     </div>
+    </div>
+    <div class="stats-row">
+     <div class="stat-mini">
+      <div class="stat-mini-label">
+       🏢 Businesses
+      </div>
+      <div class="stat-mini-value" id="business-count">
+       0
+      </div>
+     </div>
+     <div class="stat-mini">
+      <div class="stat-mini-label">
+       👥 Staff
+      </div>
+      <div class="stat-mini-value" id="staff-count">
+       0
+      </div>
+     </div>
+     <div class="stat-mini">
+      <div class="stat-mini-label">
+       🎯 Skills
+      </div>
+      <div class="stat-mini-value" id="skill-count">
+       0
+      </div>
+     </div>
+    </div>
+   </div>
+   <div id="seasonal-banner" class="seasonal-banner" style="display: none;">
+    🎄 Holiday Special: Double XP Weekend! 🎄
+   </div>
+   <div class="city-selector">
+    <div class="city-grid" id="city-grid"></div>
+   </div>
+   <div class="content-area" id="content-area"><!-- Dynamic content based on selected tab -->
+   </div><button class="floating-btn" onclick="showQuickActions()" id="quick-btn">⚡</button>
+   <div class="bottom-nav">
+    <div class="nav-grid"><button class="nav-btn active" onclick="switchTab('businesses')" id="nav-businesses"> <span class="nav-icon">🏢</span> <span>Business</span> </button> <button class="nav-btn" onclick="switchTab('staff')" id="nav-staff"> <span class="nav-icon">👥</span> <span>Staff</span> </button> <button class="nav-btn" onclick="switchTab('investments')" id="nav-investments"> <span class="nav-icon">📊</span> <span>Invest</span> </button> <button class="nav-btn" onclick="switchTab('research')" id="nav-research"> <span class="nav-icon">🔬</span> <span>Research</span>
+      <div class="notification-badge" id="research-badge" style="display: none;">
+       !
+      </div></button> <button class="nav-btn" onclick="switchTab('market')" id="nav-market"> <span class="nav-icon">🏪</span> <span>Market</span> </button> <button class="nav-btn" onclick="switchTab('portfolio')" id="nav-portfolio"> <span class="nav-icon">💼</span> <span>Portfolio</span> </button>
+    </div>
+   </div>
+  </div>
+  <script>
+    const CITIES = [
+      { id: 'newyork', emoji: '🗽', name: 'New York', multiplier: 1.8, unlockLevel: 1, development: 0, population: 8400000 },
+      { id: 'london', emoji: '🇬🇧', name: 'London', multiplier: 1.6, unlockLevel: 2, development: 0, population: 9000000 },
+      { id: 'tokyo', emoji: '🗾', name: 'Tokyo', multiplier: 1.7, unlockLevel: 3, development: 0, population: 14000000 },
+      { id: 'singapore', emoji: '🇸🇬', name: 'Singapore', multiplier: 1.5, unlockLevel: 4, development: 0, population: 5900000 },
+      { id: 'dubai', emoji: '🏜️', name: 'Dubai', multiplier: 2.0, unlockLevel: 5, development: 0, population: 3400000 },
+      { id: 'sydney', emoji: '🇦🇺', name: 'Sydney', multiplier: 1.4, unlockLevel: 6, development: 0, population: 5300000 },
+      { id: 'mumbai', emoji: '🇮🇳', name: 'Mumbai', multiplier: 1.3, unlockLevel: 7, development: 0, population: 20400000 },
+      { id: 'saopaulo', emoji: '🇧🇷', name: 'São Paulo', multiplier: 1.2, unlockLevel: 8, development: 0, population: 12300000 },
+      { id: 'moscow', emoji: '🇷🇺', name: 'Moscow', multiplier: 1.6, unlockLevel: 9, development: 0, population: 12500000 },
+      { id: 'lagos', emoji: '🇳🇬', name: 'Lagos', multiplier: 1.1, unlockLevel: 10, development: 0, population: 15300000 }
+    ];
+
+    const BUSINESS_TEMPLATES = [
+      { id: 'food_truck', name: '🚚 Food Truck', baseCost: 1000, baseRevenue: 5, category: 'food', staffSlots: 2 },
+      { id: 'cafe', name: '☕ Coffee Shop', baseCost: 5000, baseRevenue: 25, category: 'food', staffSlots: 3 },
+      { id: 'restaurant', name: '🍕 Restaurant', baseCost: 25000, baseRevenue: 125, category: 'food', staffSlots: 5 },
+      { id: 'boutique', name: '👗 Boutique', baseCost: 15000, baseRevenue: 75, category: 'retail', staffSlots: 3 },
+      { id: 'electronics', name: '📱 Electronics Store', baseCost: 50000, baseRevenue: 250, category: 'retail', staffSlots: 4 },
+      { id: 'app_dev', name: '📱 App Development', baseCost: 75000, baseRevenue: 375, category: 'tech', staffSlots: 6 },
+      { id: 'ai_startup', name: '🤖 AI Startup', baseCost: 200000, baseRevenue: 1000, category: 'tech', staffSlots: 8 },
+      { id: 'crypto_mining', name: '₿ Crypto Mining', baseCost: 500000, baseRevenue: 2500, category: 'crypto', staffSlots: 4 },
+      { id: 'real_estate', name: '🏠 Real Estate', baseCost: 1000000, baseRevenue: 5000, category: 'property', staffSlots: 6 },
+      { id: 'space_tourism', name: '🚀 Space Tourism', baseCost: 10000000, baseRevenue: 50000, category: 'future', staffSlots: 10 }
+    ];
+
+    const INVESTMENT_TYPES = [
+      { id: 'stocks', name: 'Stock Market', icon: '📈', yield: 0.08, risk: 'medium', minInvest: 1000, volatility: 0.15 },
+      { id: 'bonds', name: 'Government Bonds', icon: '🏛️', yield: 0.04, risk: 'low', minInvest: 5000, volatility: 0.05 },
+      { id: 'crypto', name: 'Cryptocurrency', icon: '₿', yield: 0.15, risk: 'high', minInvest: 500, volatility: 0.30 },
+      { id: 'commodities', name: 'Gold & Oil', icon: '🥇', yield: 0.06, risk: 'medium', minInvest: 2000, volatility: 0.12 },
+      { id: 'startups', name: 'Startup Funding', icon: '🚀', yield: 0.25, risk: 'high', minInvest: 10000, volatility: 0.40 },
+      { id: 'forex', name: 'Foreign Exchange', icon: '💱', yield: 0.12, risk: 'high', minInvest: 1000, volatility: 0.25 },
+      { id: 'reits', name: 'Real Estate Funds', icon: '🏢', yield: 0.07, risk: 'medium', minInvest: 3000, volatility: 0.08 },
+      { id: 'art', name: 'Art & Collectibles', icon: '🎨', yield: 0.10, risk: 'medium', minInvest: 15000, volatility: 0.18 },
+      { id: 'green_energy', name: 'Green Energy', icon: '🌱', yield: 0.09, risk: 'medium', minInvest: 5000, volatility: 0.14 },
+      { id: 'biotech', name: 'Biotech Research', icon: '🧬', yield: 0.20, risk: 'high', minInvest: 25000, volatility: 0.35 }
+    ];
+
+    const STAFF_TYPES = [
+      { id: 'manager', name: 'Manager', icon: '👔', cost: 5000, efficiency: 1.5, specialty: 'all' },
+      { id: 'marketer', name: 'Marketing Expert', icon: '📢', cost: 8000, efficiency: 1.3, specialty: 'revenue' },
+      { id: 'accountant', name: 'Accountant', icon: '📊', cost: 6000, efficiency: 1.2, specialty: 'cost' },
+      { id: 'tech_lead', name: 'Tech Lead', icon: '💻', cost: 12000, efficiency: 2.0, specialty: 'tech' },
+      { id: 'sales_rep', name: 'Sales Rep', icon: '🤝', cost: 7000, efficiency: 1.4, specialty: 'sales' },
+      { id: 'consultant', name: 'Business Consultant', icon: '🎯', cost: 15000, efficiency: 1.8, specialty: 'strategy' }
+    ];
+
+    const SKILL_TREE = [
+      { id: 'entrepreneur', name: 'Entrepreneur', icon: '🚀', cost: 0, unlocked: true, effect: 'Base skills' },
+      { id: 'negotiator', name: 'Negotiator', icon: '🤝', cost: 5, unlocked: false, effect: '10% better deals' },
+      { id: 'tech_mogul', name: 'Tech Mogul', icon: '💻', cost: 10, unlocked: false, effect: '50% tech bonus' },
+      { id: 'real_estate_baron', name: 'Real Estate Baron', icon: '🏢', cost: 15, unlocked: false, effect: '30% property bonus' },
+      { id: 'investment_guru', name: 'Investment Guru', icon: '📈', cost: 20, unlocked: false, effect: '25% investment returns' },
+      { id: 'global_tycoon', name: 'Global Tycoon', icon: '🌍', cost: 50, unlocked: false, effect: '2x city bonuses' }
+    ];
+
+    const RESEARCH_PROJECTS = [
+      { id: 'automation', name: 'Business Automation', icon: '🤖', cost: 50000, duration: 300, effect: 'Auto-collect revenue' },
+      { id: 'ai_analytics', name: 'AI Analytics', icon: '🧠', cost: 100000, duration: 600, effect: 'Predict market trends' },
+      { id: 'blockchain', name: 'Blockchain Integration', icon: '⛓️', cost: 200000, duration: 900, effect: 'Secure transactions' },
+      { id: 'quantum_computing', name: 'Quantum Computing', icon: '⚛️', cost: 500000, duration: 1800, effect: 'Ultra-fast processing' }
+    ];
+
+    let gameState = {
+      cash: 25000,
+      startTime: Date.now(),
+      lastTick: Date.now(),
+      currentCity: 'newyork',
+      currentTab: 'businesses',
+      playerLevel: 1,
+      experience: 0,
+      prestigeLevel: 0,
+      prestigePoints: 0,
+      entities: [],
+      staff: [],
+      skills: ['entrepreneur'],
+      research: [],
+      achievements: [],
+      loans: [],
+      events: [],
+      lastEventTime: Date.now(),
+      totalEarnings: 0,
+      marketConditions: {
+        economy: 'stable', // boom, stable, recession
+        techTrend: 1.0,
+        realEstateTrend: 1.0,
+        cryptoTrend: 1.0
+      },
+      offlineTime: 0,
+      dailyChallenge: null,
+      seasonalEvent: null,
+      competitors: [],
+      notifications: []
+    };
+
+    function saveGame() {
+      try {
+        localStorage.setItem('businessEmpireGame', JSON.stringify(gameState));
+      } catch (e) {
+        console.log('Could not save game state');
+      }
+    }
+
+    function loadGame() {
+      try {
+        const saved = localStorage.getItem('businessEmpireGame');
+        if (saved) {
+          const loadedState = JSON.parse(saved);
+          gameState = { ...gameState, ...loadedState };
+          gameState.lastTick = Date.now();
+          
+          // Calculate offline progress
+          const offlineTime = Date.now() - (loadedState.lastTick || Date.now());
+          if (offlineTime > 60000) { // More than 1 minute offline
+            calculateOfflineProgress(offlineTime);
+          }
+        }
+      } catch (e) {
+        console.log('Could not load game state');
+      }
+    }
+
+    function calculateOfflineProgress(offlineTime) {
+      const offlineHours = offlineTime / (1000 * 60 * 60);
+      let offlineEarnings = 0;
+      
+      gameState.entities.forEach(entity => {
+        if (entity.entity_type === 'business' && entity.owner_type === 'player') {
+          // Reduced offline earnings (50% of normal rate)
+          offlineEarnings += entity.revenue_per_tick * offlineHours * 3600 * 0.5;
+        }
+      });
+
+      if (offlineEarnings > 0) {
+        gameState.cash += offlineEarnings;
+        showModal('Welcome Back!', `
+          <div style="text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 20px;">💰</div>
+            <div style="font-size: 20px; margin-bottom: 10px;">You were away for ${Math.floor(offlineHours)} hours</div>
+            <div style="font-size: 16px; margin-bottom: 20px;">Your businesses earned: $${formatNumber(offlineEarnings)}</div>
+            <button class="btn btn-primary" onclick="closeModal()">Collect Earnings</button>
+          </div>
+        `);
+      }
+    }
+
+    function init() {
+      loadGame();
+      initializeMarket();
+      generateCompetitors();
+      checkSeasonalEvents();
+      renderCityGrid();
+      renderCurrentTab();
+      startGameLoop();
+      showWelcomeMessage();
+    }
+
+    function initializeMarket() {
+      // Initialize market conditions
+      gameState.marketConditions = {
+        economy: Math.random() > 0.7 ? (Math.random() > 0.5 ? 'boom' : 'recession') : 'stable',
+        techTrend: 0.8 + Math.random() * 0.4,
+        realEstateTrend: 0.8 + Math.random() * 0.4,
+        cryptoTrend: 0.5 + Math.random() * 1.0
+      };
+    }
+
+    function generateCompetitors() {
+      if (gameState.competitors.length === 0) {
+        const competitorNames = ['TechCorp', 'GlobalVentures', 'MegaBusiness', 'InnovateCo', 'FutureTech'];
+        for (let i = 0; i < 3; i++) {
+          gameState.competitors.push({
+            id: `competitor_${i}`,
+            name: competitorNames[i],
+            level: Math.floor(Math.random() * 5) + 1,
+            businesses: Math.floor(Math.random() * 10) + 1,
+            netWorth: Math.floor(Math.random() * 1000000) + 100000
+          });
+        }
+      }
+    }
+
+    function checkSeasonalEvents() {
+      const now = new Date();
+      const month = now.getMonth();
+      
+      // Holiday events
+      if (month === 11) { // December
+        gameState.seasonalEvent = {
+          name: 'Holiday Shopping Boom',
+          effect: 'retail_bonus',
+          multiplier: 2.0,
+          duration: 30
+        };
+        document.getElementById('seasonal-banner').style.display = 'block';
+      } else if (month === 0) { // January
+        gameState.seasonalEvent = {
+          name: 'New Year Tech Surge',
+          effect: 'tech_bonus',
+          multiplier: 1.5,
+          duration: 15
+        };
+      }
+    }
+
+    function showWelcomeMessage() {
+      setTimeout(() => {
+        if (gameState.prestigeLevel > 0) {
+          showToast(`Welcome back, Prestige Level ${gameState.prestigeLevel} Tycoon!`);
+        } else {
+          showToast('Welcome to Mobile Business Empire! Start by buying your first business.');
+        }
+      }, 1000);
+    }
+
+    function renderCityGrid() {
+      const container = document.getElementById('city-grid');
+      container.innerHTML = '';
+      
+      CITIES.forEach(city => {
+        const isUnlocked = gameState.playerLevel >= city.unlockLevel;
+        const isActive = city.id === gameState.currentCity;
+        
+        const div = document.createElement('div');
+        div.className = `city-card ${isActive ? 'active' : ''} ${!isUnlocked ? 'locked' : ''}`;
+        div.style.opacity = isUnlocked ? '1' : '0.5';
+        div.innerHTML = `
+          <span class="city-emoji">${city.emoji}</span>
+          <div>${city.name}</div>
+          ${!isUnlocked ? `<div style="font-size: 10px; color: #f56565;">Lv.${city.unlockLevel}</div>` : ''}
+          ${city.development > 0 ? `<div class="city-development">+${city.development}%</div>` : ''}
+        `;
+        
+        if (isUnlocked) {
+          div.onclick = () => switchCity(city.id);
+        } else {
+          div.onclick = () => showUnlockGuidance(city);
+        }
+        
+        container.appendChild(div);
+      });
+    }
+
+    function switchCity(cityId) {
+      gameState.currentCity = cityId;
+      renderCityGrid();
+      renderCurrentTab();
+      saveGame();
+      
+      const city = CITIES.find(c => c.id === cityId);
+      showToast(`Switched to ${city.name} (${city.multiplier}x multiplier)`);
+    }
+
+    function switchTab(tabName) {
+      gameState.currentTab = tabName;
+      
+      // Update nav buttons
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`nav-${tabName}`).classList.add('active');
+      
+      renderCurrentTab();
+    }
+
+    function renderCurrentTab() {
+      const container = document.getElementById('content-area');
+      
+      switch (gameState.currentTab) {
+        case 'businesses':
+          renderBusinessesTab(container);
+          break;
+        case 'staff':
+          renderStaffTab(container);
+          break;
+        case 'investments':
+          renderInvestmentsTab(container);
+          break;
+        case 'research':
+          renderResearchTab(container);
+          break;
+        case 'market':
+          renderMarketTab(container);
+          break;
+        case 'portfolio':
+          renderPortfolioTab(container);
+          break;
+      }
+    }
+
+    function renderBusinessesTab(container) {
+      const city = CITIES.find(c => c.id === gameState.currentCity);
+      const ownedBusinesses = gameState.entities.filter(e => 
+        e.entity_type === 'business' && 
+        e.owner_type === 'player' && 
+        e.city === gameState.currentCity
+      );
+
+      container.innerHTML = `
+        ${renderMiniGame()}
+        
+        <div style="margin-bottom: 20px;">
+          <h3 style="margin: 0 0 15px 0; color: white; text-align: center;">
+            🏢 Available Businesses in ${city.name}
+          </h3>
+          <div id="available-businesses"></div>
+        </div>
+        
+        <div>
+          <h3 style="margin: 0 0 15px 0; color: white; text-align: center;">
+            🏆 Your Businesses (${ownedBusinesses.length})
+          </h3>
+          <div id="owned-businesses"></div>
+        </div>
+      `;
+
+      renderAvailableBusinesses();
+      renderOwnedBusinesses();
+    }
+
+    function renderMiniGame() {
+      return `
+        <div class="mini-game" id="mini-game">
+          <div style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">🎯 Quick Boost</div>
+          <div style="font-size: 12px; margin-bottom: 15px;">Tap to earn instant cash!</div>
+          <div class="tap-area" onclick="playMiniGame()">💰</div>
+          <div style="font-size: 12px;">Taps remaining: <span id="taps-remaining">10</span></div>
+        </div>
+      `;
+    }
+
+    function playMiniGame() {
+      const tapsElement = document.getElementById('taps-remaining');
+      let taps = parseInt(tapsElement.textContent);
+      
+      if (taps > 0) {
+        const earnings = Math.floor(gameState.cash * 0.01); // 1% of current cash
+        gameState.cash += earnings;
+        taps--;
+        tapsElement.textContent = taps;
+        
+        showToast(`+$${formatNumber(earnings)}`);
+        updateStats();
+        
+        if (taps === 0) {
+          setTimeout(() => {
+            tapsElement.textContent = '10';
+          }, 60000); // Reset after 1 minute
+        }
+      }
+    }
+
+    function renderStaffTab(container) {
+      container.innerHTML = `
+        <div style="margin-bottom: 20px;">
+          <h3 style="margin: 0 0 15px 0; color: white; text-align: center;">👥 Available Staff</h3>
+          <div class="staff-grid" id="available-staff"></div>
+        </div>
+        
+        <div>
+          <h3 style="margin: 0 0 15px 0; color: white; text-align: center;">🏆 Your Team</h3>
+          <div id="hired-staff"></div>
+        </div>
+      `;
+
+      renderAvailableStaff();
+      renderHiredStaff();
+    }
+
+    function renderAvailableStaff() {
+      const container = document.getElementById('available-staff');
+      container.innerHTML = '';
+      
+      STAFF_TYPES.forEach(staff => {
+        const isHired = gameState.staff.some(s => s.staff_type === staff.id);
+        
+        const div = document.createElement('div');
+        div.className = `staff-card ${isHired ? 'hired' : ''}`;
+        div.innerHTML = `
+          <div style="font-size: 32px; margin-bottom: 8px;">${staff.icon}</div>
+          <div style="font-weight: bold; margin-bottom: 4px;">${staff.name}</div>
+          <div style="font-size: 11px; margin-bottom: 8px;">+${((staff.efficiency - 1) * 100).toFixed(0)}% Efficiency</div>
+          <div style="font-size: 10px; margin-bottom: 10px;">Cost: $${formatNumber(staff.cost)}</div>
+          <button class="btn ${isHired ? 'btn-secondary' : 'btn-primary'}" 
+            onclick="${isHired ? '' : `hireStaff('${staff.id}')`}" 
+            ${isHired || gameState.cash < staff.cost ? 'disabled' : ''}>
+            ${isHired ? 'Hired' : 'Hire'}
+          </button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderHiredStaff() {
+      const container = document.getElementById('hired-staff');
+      const hiredStaff = gameState.staff;
+
+      if (hiredStaff.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">👥</div>
+            <div>No staff hired yet.<br>Build your dream team!</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+      hiredStaff.forEach(staff => {
+        const staffType = STAFF_TYPES.find(t => t.id === staff.staff_type);
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">${staffType.icon} ${staffType.name}</div>
+            <div class="card-badge">Lv.${staff.level}</div>
+          </div>
+          <div class="card-info">
+            📊 Efficiency: +${((staffType.efficiency * staff.level - 1) * 100).toFixed(0)}%<br>
+            💰 Salary: $${formatNumber(staffType.cost * staff.level)}/month<br>
+            🎯 Specialty: ${staffType.specialty}
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-success" onclick="trainStaff('${staff.id}')"
+              ${gameState.cash < staffType.cost * staff.level * 2 ? 'disabled' : ''}>
+              Train (+$${formatNumber(staffType.cost * staff.level * 2)})
+            </button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderResearchTab(container) {
+      container.innerHTML = `
+        <div style="margin-bottom: 20px;">
+          <h3 style="margin: 0 0 15px 0; color: white; text-align: center;">🔬 Research Projects</h3>
+          <div id="research-projects"></div>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+          <h3 style="margin: 0 0 15px 0; color: white; text-align: center;">🎯 Skill Tree</h3>
+          <div class="skill-tree" id="skill-tree"></div>
+        </div>
+        
+        <div>
+          <h3 style="margin: 0 0 15px 0; color: white; text-align: center;">✅ Completed Research</h3>
+          <div id="completed-research"></div>
+        </div>
+      `;
+
+      renderResearchProjects();
+      renderSkillTree();
+      renderCompletedResearch();
+    }
+
+    function renderResearchProjects() {
+      const container = document.getElementById('research-projects');
+      container.innerHTML = '';
+      
+      RESEARCH_PROJECTS.forEach(project => {
+        const isCompleted = gameState.research.some(r => r.project_id === project.id);
+        const isInProgress = gameState.research.some(r => r.project_id === project.id && r.status === 'in_progress');
+        
+        if (!isCompleted) {
+          const div = document.createElement('div');
+          div.className = 'card research-card';
+          div.innerHTML = `
+            <div class="card-header">
+              <div class="card-title">${project.icon} ${project.name}</div>
+              <div class="card-badge">${project.duration}s</div>
+            </div>
+            <div class="card-info">
+              💰 Cost: $${formatNumber(project.cost)}<br>
+              🎯 Effect: ${project.effect}<br>
+              ⏱️ Duration: ${project.duration} seconds
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-primary" onclick="startResearch('${project.id}')"
+                ${isInProgress || gameState.cash < project.cost ? 'disabled' : ''}>
+                ${isInProgress ? 'Researching...' : 'Start Research'}
+              </button>
+            </div>
+          `;
+          container.appendChild(div);
+        }
+      });
+    }
+
+    function renderSkillTree() {
+      const container = document.getElementById('skill-tree');
+      container.innerHTML = '';
+      
+      SKILL_TREE.forEach(skill => {
+        const isUnlocked = gameState.skills.includes(skill.id);
+        const canUnlock = gameState.prestigePoints >= skill.cost && !isUnlocked;
+        
+        const div = document.createElement('div');
+        div.className = `skill-node ${isUnlocked ? 'unlocked' : canUnlock ? 'available' : ''}`;
+        div.innerHTML = `
+          <div style="font-size: 32px; margin-bottom: 8px;">${skill.icon}</div>
+          <div style="font-weight: bold; margin-bottom: 4px;">${skill.name}</div>
+          <div style="font-size: 10px; margin-bottom: 8px;">${skill.effect}</div>
+          <div style="font-size: 10px;">Cost: ${skill.cost} PP</div>
+        `;
+        
+        if (canUnlock) {
+          div.onclick = () => unlockSkill(skill.id);
+        }
+        
+        container.appendChild(div);
+      });
+    }
+
+    function renderCompletedResearch() {
+      const container = document.getElementById('completed-research');
+      const completed = gameState.research.filter(r => r.status === 'completed');
+
+      if (completed.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🔬</div>
+            <div>No research completed yet.<br>Start your first project!</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+      completed.forEach(research => {
+        const project = RESEARCH_PROJECTS.find(p => p.id === research.project_id);
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
+        div.style.color = 'white';
+        div.innerHTML = `
+          <div class="card-title">${project.icon} ${project.name}</div>
+          <div style="font-size: 12px; opacity: 0.9;">${project.effect}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderAvailableBusinesses() {
+      const container = document.getElementById('available-businesses');
+      const city = CITIES.find(c => c.id === gameState.currentCity);
+      
+      container.innerHTML = '';
+      
+      BUSINESS_TEMPLATES.forEach(template => {
+        const ownedCount = gameState.entities.filter(e => 
+          e.entity_type === 'business' && 
+          e.business_type === template.id && 
+          e.city === gameState.currentCity &&
+          e.owner_type === 'player'
+        ).length;
+        
+        let cost = Math.floor(template.baseCost * city.multiplier * Math.pow(1.15, ownedCount));
+        let revenue = Math.floor(template.baseRevenue * city.multiplier * Math.pow(1.15, ownedCount));
+
+        // Apply market conditions
+        if (gameState.marketConditions.economy === 'boom') {
+          revenue *= 1.3;
+        } else if (gameState.marketConditions.economy === 'recession') {
+          revenue *= 0.7;
+          cost *= 0.8;
+        }
+
+        // Apply seasonal bonuses
+        if (gameState.seasonalEvent && gameState.seasonalEvent.effect === 'retail_bonus' && template.category === 'retail') {
+          revenue *= gameState.seasonalEvent.multiplier;
+        }
+
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">${template.name}</div>
+            <div class="card-badge">Owned: ${ownedCount}</div>
+          </div>
+          <div class="card-info">
+            💵 Cost: $${formatNumber(cost)}<br>
+            📊 Revenue: $${formatNumber(revenue)}/sec<br>
+            🌍 City Bonus: ${city.multiplier}x<br>
+            👥 Staff Slots: ${template.staffSlots}
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-primary" onclick="showPurchaseModal('${template.id}')" 
+              ${gameState.cash < cost ? 'disabled' : ''}>
+              ${gameState.cash < cost ? 'Need $' + formatNumber(cost - gameState.cash) : 'Purchase'}
+            </button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderOwnedBusinesses() {
+      const container = document.getElementById('owned-businesses');
+      const ownedBusinesses = gameState.entities.filter(e => 
+        e.entity_type === 'business' && 
+        e.owner_type === 'player' && 
+        e.city === gameState.currentCity
+      );
+
+      if (ownedBusinesses.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🏢</div>
+            <div>No businesses in this city yet.<br>Start building your empire!</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+      ownedBusinesses.forEach(business => {
+        const staffCount = gameState.staff.filter(s => s.assigned_business === business.id).length;
+        const template = BUSINESS_TEMPLATES.find(t => t.id === business.business_type);
+        
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">${business.name}</div>
+            <div class="card-badge">Lv.${business.level}</div>
+          </div>
+          <div class="card-info">
+            📊 Revenue: $${formatNumber(business.revenue_per_tick)}/sec<br>
+            👥 Staff: ${staffCount}/${template.staffSlots}<br>
+            ⬆️ Upgrade: $${formatNumber(business.upgrade_cost)}<br>
+            💰 Value: $${formatNumber(business.market_value)}
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${Math.min(100, (business.level / 10) * 100)}%"></div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-success" onclick="upgradeBusiness('${business.id}')"
+              ${gameState.cash < business.upgrade_cost ? 'disabled' : ''}>
+              Upgrade
+            </button>
+            <button class="btn btn-warning" onclick="manageStaff('${business.id}')">
+              Staff
+            </button>
+            <button class="btn btn-danger" onclick="showSellModal('${business.id}')">
+              Sell
+            </button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderInvestmentsTab(container) {
+      container.innerHTML = `
+        <div style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 15px; margin-bottom: 20px; color: white;">
+          <h3 style="margin: 0 0 10px 0; text-align: center;">📊 Market Conditions</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+            <div>Economy: ${gameState.marketConditions.economy.toUpperCase()}</div>
+            <div>Tech Trend: ${(gameState.marketConditions.techTrend * 100).toFixed(0)}%</div>
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+          <h3 style="margin: 0 0 15px 0; color: white; text-align: center;">📊 Investment Opportunities</h3>
+          <div class="investment-grid" id="investment-grid"></div>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+          <h3 style="margin: 0 0 15px 0; color: white; text-align: center;">🏦 Banking & Loans</h3>
+          <div id="banking-section"></div>
+        </div>
+        
+        <div>
+          <h3 style="margin: 0 0 15px 0; color: white; text-align: center;">💼 Your Investments</h3>
+          <div id="your-investments"></div>
+        </div>
+      `;
+
+      renderInvestmentGrid();
+      renderBankingSection();
+      renderYourInvestments();
+    }
+
+    function renderInvestmentGrid() {
+      const container = document.getElementById('investment-grid');
+      container.innerHTML = '';
+      
+      INVESTMENT_TYPES.forEach(investment => {
+        // Apply market volatility
+        const currentYield = investment.yield * (1 + (Math.random() - 0.5) * investment.volatility);
+        const trendIndicator = currentYield > investment.yield ? '📈' : currentYield < investment.yield ? '📉' : '➡️';
+        
+        const div = document.createElement('div');
+        div.className = 'investment-card';
+        div.style.background = getInvestmentGradient(investment.risk);
+        div.innerHTML = `
+          <div class="risk-indicator risk-${investment.risk}"></div>
+          <div class="market-indicator">${trendIndicator}</div>
+          <div class="investment-icon">${investment.icon}</div>
+          <div class="investment-name">${investment.name}</div>
+          <div class="investment-yield">${(currentYield * 100).toFixed(1)}% APY</div>
+          <div style="font-size: 10px; margin-top: 4px;">Min: $${formatNumber(investment.minInvest)}</div>
+        `;
+        div.onclick = () => showInvestmentModal(investment, currentYield);
+        container.appendChild(div);
+      });
+    }
+
+    function renderBankingSection() {
+      const container = document.getElementById('banking-section');
+      const creditRating = calculateCreditRating();
+      const maxLoan = Math.floor(gameState.cash * 2);
+      
+      container.innerHTML = `
+        <div class="card loan-card">
+          <div class="card-header">
+            <div class="card-title">🏦 Business Loan</div>
+            <div class="card-badge">Credit: ${creditRating}</div>
+          </div>
+          <div class="card-info">
+            💰 Max Loan: $${formatNumber(maxLoan)}<br>
+            📊 Interest Rate: ${getCreditRate(creditRating)}% APR<br>
+            ⏱️ Term: 12 months
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-warning" onclick="showLoanModal(${maxLoan}, ${getCreditRate(creditRating)})">
+              Apply for Loan
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMarketTab(container) {
+      const npcBusinesses = gameState.entities.filter(e => 
+        e.entity_type === 'business' && 
+        e.owner_type === 'npc' && 
+        e.city === gameState.currentCity
+      );
+
+      container.innerHTML = `
+        <div style="margin-bottom: 20px;">
+          <h3 style="margin: 0 0 15px 0; color: white; text-align: center;">🏆 Competitors</h3>
+          <div id="competitors-section"></div>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+          <h3 style="margin: 0 0 15px 0; color: white; text-align: center;">🎲 Random Events</h3>
+          <div id="events-section"></div>
+        </div>
+        
+        <div>
+          <h3 style="margin: 0 0 15px 0; color: white; text-align: center;">
+            🏪 Market Opportunities in ${CITIES.find(c => c.id === gameState.currentCity).name}
+          </h3>
+          <div id="market-businesses"></div>
+        </div>
+      `;
+
+      renderCompetitors();
+      renderEvents();
+      renderMarketBusinesses(npcBusinesses);
+    }
+
+    function renderCompetitors() {
+      const container = document.getElementById('competitors-section');
+      container.innerHTML = '';
+      
+      gameState.competitors.forEach(competitor => {
+        const div = document.createElement('div');
+        div.className = 'card competitor-card';
+        div.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">🏢 ${competitor.name}</div>
+            <div class="card-badge">Lv.${competitor.level}</div>
+          </div>
+          <div class="card-info">
+            🏢 Businesses: ${competitor.businesses}<br>
+            💰 Net Worth: $${formatNumber(competitor.netWorth)}
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-warning" onclick="challengeCompetitor('${competitor.id}')">
+              Challenge
+            </button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderEvents() {
+      const container = document.getElementById('events-section');
+      
+      if (gameState.events.length === 0) {
+        container.innerHTML = `
+          <div class="card">
+            <div class="card-info" style="text-align: center;">
+              📰 No active events<br>
+              <small>Events appear randomly and offer opportunities!</small>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+      gameState.events.forEach(event => {
+        const div = document.createElement('div');
+        div.className = 'card event-card';
+        div.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">${event.icon} ${event.name}</div>
+            <div class="card-badge">${event.duration}s</div>
+          </div>
+          <div class="card-info">
+            ${event.description}
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-success" onclick="acceptEvent('${event.id}')">
+              Accept
+            </button>
+            <button class="btn btn-danger" onclick="declineEvent('${event.id}')">
+              Decline
+            </button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderPortfolioTab(container) {
+      const totalValue = calculatePortfolioValue();
+      const monthlyIncome = calculateMonthlyIncome();
+      const prestigeThreshold = calculatePrestigeThreshold();
+      
+      container.innerHTML = `
+        <div style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; margin-bottom: 20px; color: white;">
+          <h3 style="margin: 0 0 15px 0; text-align: center;">💼 Portfolio Overview</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: center;">
+            <div>
+              <div style="font-size: 24px; font-weight: bold;">$${formatNumber(totalValue)}</div>
+              <div style="font-size: 12px; opacity: 0.8;">Total Value</div>
+            </div>
+            <div>
+              <div style="font-size: 24px; font-weight: bold;">$${formatNumber(monthlyIncome)}</div>
+              <div style="font-size: 12px; opacity: 0.8;">Monthly Income</div>
+            </div>
+          </div>
+          
+          ${totalValue >= prestigeThreshold ? `
+            <div style="margin-top: 15px; text-align: center;">
+              <button class="btn btn-prestige" onclick="showPrestigeModal()" style="width: 100%;">
+                🌟 Go Public (Prestige) 🌟
+              </button>
+            </div>
+          ` : `
+            <div style="margin-top: 15px; text-align: center; font-size: 12px;">
+              Prestige available at $${formatNumber(prestigeThreshold)} net worth
+            </div>
+          `}
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+          <h3 style="margin: 0 0 15px 0; color: white; text-align: center;">🏆 Achievements & Leaderboard</h3>
+          <div id="achievements-leaderboard"></div>
+        </div>
+        
+        <div>
+          <h3 style="margin: 0 0 15px 0; color: white; text-align: center;">📊 Asset Breakdown</h3>
+          <div id="portfolio-breakdown"></div>
+        </div>
+      `;
+
+      renderAchievementsLeaderboard();
+      renderPortfolioBreakdown();
+    }
+
+    function renderAchievementsLeaderboard() {
+      const container = document.getElementById('achievements-leaderboard');
+      
+      container.innerHTML = `
+        <div class="leaderboard">
+          <div style="font-weight: bold; text-align: center; margin-bottom: 10px;">🏆 Your Achievements</div>
+          ${gameState.achievements.length > 0 ? 
+            gameState.achievements.slice(-3).map(achievement => `
+              <div class="leaderboard-item">
+                <span>🏆 ${achievement}</span>
+              </div>
+            `).join('') : 
+            '<div style="text-align: center; color: #666;">No achievements yet</div>'
+          }
+        </div>
+      `;
+    }
+
+    // Core game functions
+    function hireStaff(staffTypeId) {
+      const staffType = STAFF_TYPES.find(t => t.id === staffTypeId);
+      
+      if (gameState.cash < staffType.cost) {
+        showToast('Not enough cash!');
+        return;
+      }
+
+      gameState.cash -= staffType.cost;
+      gameState.experience += 8;
+
+      const staff = {
+        id: `staff_${Date.now()}`,
+        staff_type: staffTypeId,
+        level: 1,
+        assigned_business: null,
+        hired_at: new Date().toISOString()
+      };
+
+      gameState.staff.push(staff);
+      saveGame();
+      showToast(`👥 Hired ${staffType.name}!`);
+      renderCurrentTab();
+      updateStats();
+    }
+
+    function trainStaff(staffId) {
+      const staff = gameState.staff.find(s => s.id === staffId);
+      const staffType = STAFF_TYPES.find(t => t.id === staff.staff_type);
+      const cost = staffType.cost * staff.level * 2;
+
+      if (gameState.cash < cost) {
+        showToast('Not enough cash!');
+        return;
+      }
+
+      gameState.cash -= cost;
+      gameState.experience += 12;
+      staff.level += 1;
+
+      saveGame();
+      showToast(`📚 Trained ${staffType.name} to level ${staff.level}!`);
+      renderCurrentTab();
+      updateStats();
+    }
+
+    function startResearch(projectId) {
+      const project = RESEARCH_PROJECTS.find(p => p.id === projectId);
+      
+      if (gameState.cash < project.cost) {
+        showToast('Not enough cash!');
+        return;
+      }
+
+      gameState.cash -= project.cost;
+      gameState.experience += 25;
+
+      const research = {
+        id: `research_${Date.now()}`,
+        project_id: projectId,
+        status: 'in_progress',
+        started_at: Date.now(),
+        duration: project.duration * 1000
+      };
+
+      gameState.research.push(research);
+      saveGame();
+      showToast(`🔬 Started researching ${project.name}!`);
+      renderCurrentTab();
+      updateStats();
+
+      // Complete research after duration
+      setTimeout(() => {
+        research.status = 'completed';
+        research.completed_at = Date.now();
+        saveToast(`✅ Research completed: ${project.name}!`);
+        saveGame();
+        renderCurrentTab();
+      }, project.duration * 1000);
+    }
+
+    function unlockSkill(skillId) {
+      const skill = SKILL_TREE.find(s => s.id === skillId);
+      
+      if (gameState.prestigePoints < skill.cost) {
+        showToast('Not enough prestige points!');
+        return;
+      }
+
+      gameState.prestigePoints -= skill.cost;
+      gameState.skills.push(skillId);
+
+      saveGame();
+      showToast(`🎯 Unlocked skill: ${skill.name}!`);
+      renderCurrentTab();
+      updateStats();
+    }
+
+    function calculatePrestigeThreshold() {
+      return Math.pow(10, 6 + gameState.prestigeLevel); // $1M, $10M, $100M, etc.
+    }
+
+    function showPrestigeModal() {
+      const prestigePoints = Math.floor(calculatePortfolioValue() / 1000000);
+      
+      showModal('Go Public (Prestige)', `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="font-size: 48px; margin-bottom: 10px;">🌟</div>
+          <div style="font-size: 20px; font-weight: bold; margin-bottom: 5px;">Take Your Company Public!</div>
+          <div style="color: #666;">Reset your progress but gain permanent bonuses</div>
+        </div>
+        
+        <div style="background: #f7fafc; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+          <div style="margin-bottom: 10px;">🏆 <strong>Prestige Points:</strong> +${prestigePoints}</div>
+          <div style="margin-bottom: 10px;">⚡ <strong>Permanent Bonuses:</strong></div>
+          <div style="margin-left: 20px; font-size: 14px;">
+            • ${prestigePoints * 10}% faster income<br>
+            • ${prestigePoints * 5}% cheaper upgrades<br>
+            • Access to advanced skills<br>
+            • Exclusive prestige businesses
+          </div>
+        </div>
+        
+        <div style="background: #fff5f5; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #fed7d7;">
+          <div style="color: #c53030; font-weight: bold; margin-bottom: 5px;">⚠️ Warning</div>
+          <div style="color: #c53030; font-size: 14px;">This will reset all your businesses, cash, and progress!</div>
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-secondary" onclick="closeModal()" style="flex: 1;">Keep Building</button>
+          <button class="btn btn-prestige" onclick="performPrestige(${prestigePoints})" style="flex: 1;">
+            Go Public!
+          </button>
+        </div>
+      `);
+    }
+
+    function performPrestige(points) {
+      gameState.prestigeLevel += 1;
+      gameState.prestigePoints += points;
+      
+      // Reset progress
+      gameState.cash = 25000 * (1 + gameState.prestigeLevel * 0.5);
+      gameState.playerLevel = 1;
+      gameState.experience = 0;
+      gameState.entities = [];
+      gameState.staff = [];
+      gameState.research = [];
+      gameState.loans = [];
+      gameState.events = [];
+      
+      // Keep skills and achievements
+      
+      saveGame();
+      closeModal();
+      showAchievementPopup(`🌟 Prestige Level ${gameState.prestigeLevel}! You gained ${points} prestige points!`);
+      renderCityGrid();
+      renderCurrentTab();
+      updateStats();
+    }
+
+    function calculateCreditRating() {
+      const netWorth = calculatePortfolioValue();
+      const businessCount = gameState.entities.filter(e => e.entity_type === 'business' && e.owner_type === 'player').length;
+      
+      if (netWorth > 10000000) return 'AAA';
+      if (netWorth > 5000000) return 'AA';
+      if (netWorth > 1000000) return 'A';
+      if (netWorth > 500000) return 'BBB';
+      if (netWorth > 100000) return 'BB';
+      return 'B';
+    }
+
+    function getCreditRate(rating) {
+      const rates = { 'AAA': 3, 'AA': 4, 'A': 5, 'BBB': 7, 'BB': 10, 'B': 15 };
+      return rates[rating] || 20;
+    }
+
+    function generateRandomEvent() {
+      const events = [
+        {
+          id: 'tech_boom',
+          name: 'Tech Boom',
+          icon: '🚀',
+          description: 'A new technology trend is emerging! Tech businesses get 50% bonus for 5 minutes.',
+          effect: 'tech_bonus',
+          multiplier: 1.5,
+          duration: 300,
+          cost: 0,
+          reward: 0
+        },
+        {
+          id: 'celebrity_endorsement',
+          name: 'Celebrity Endorsement',
+          icon: '⭐',
+          description: 'A celebrity wants to endorse your business! Pay $50K for 2x revenue for 3 minutes.',
+          effect: 'revenue_boost',
+          multiplier: 2.0,
+          duration: 180,
+          cost: 50000,
+          reward: 0
+        },
+        {
+          id: 'government_grant',
+          name: 'Government Grant',
+          icon: '🏛️',
+          description: 'The government is offering grants for green businesses! Get $100K instantly.',
+          effect: 'cash_bonus',
+          multiplier: 1.0,
+          duration: 0,
+          cost: 0,
+          reward: 100000
+        }
+      ];
+
+      const event = events[Math.floor(Math.random() * events.length)];
+      event.id = `${event.id}_${Date.now()}`;
+      
+      gameState.events.push(event);
+      showToast(`🎲 New event: ${event.name}!`);
+      
+      // Auto-remove after 2 minutes if not acted upon
+      setTimeout(() => {
+        gameState.events = gameState.events.filter(e => e.id !== event.id);
+        renderCurrentTab();
+      }, 120000);
+    }
+
+    function acceptEvent(eventId) {
+      const event = gameState.events.find(e => e.id === eventId);
+      
+      if (event.cost > 0 && gameState.cash < event.cost) {
+        showToast('Not enough cash for this event!');
+        return;
+      }
+
+      gameState.cash -= event.cost;
+      gameState.cash += event.reward;
+      
+      if (event.effect === 'tech_bonus') {
+        // Apply temporary bonus to tech businesses
+        gameState.entities.forEach(entity => {
+          if (entity.business_type && BUSINESS_TEMPLATES.find(t => t.id === entity.business_type)?.category === 'tech') {
+            entity.temp_multiplier = event.multiplier;
+            setTimeout(() => {
+              entity.temp_multiplier = 1.0;
+            }, event.duration * 1000);
+          }
+        });
+      }
+
+      gameState.events = gameState.events.filter(e => e.id !== eventId);
+      showToast(`✅ Event accepted: ${event.name}!`);
+      saveGame();
+      renderCurrentTab();
+      updateStats();
+    }
+
+    function declineEvent(eventId) {
+      gameState.events = gameState.events.filter(e => e.id !== eventId);
+      showToast('Event declined.');
+      renderCurrentTab();
+    }
+
+    // Enhanced existing functions with new features
+    function purchaseBusiness(templateId) {
+      const template = BUSINESS_TEMPLATES.find(t => t.id === templateId);
+      const city = CITIES.find(c => c.id === gameState.currentCity);
+      const ownedCount = gameState.entities.filter(e => 
+        e.entity_type === 'business' && 
+        e.business_type === templateId && 
+        e.city === gameState.currentCity &&
+        e.owner_type === 'player'
+      ).length;
+      
+      let cost = Math.floor(template.baseCost * city.multiplier * Math.pow(1.15, ownedCount));
+      
+      // Apply prestige bonuses
+      if (gameState.prestigeLevel > 0) {
+        cost = Math.floor(cost * (1 - gameState.prestigeLevel * 0.05));
+      }
+
+      if (gameState.cash < cost) {
+        showToast('Not enough cash!');
+        return;
+      }
+
+      gameState.cash -= cost;
+      gameState.experience += 10;
+
+      let baseRevenue = Math.floor(template.baseRevenue * city.multiplier);
+      
+      // Apply prestige bonuses
+      if (gameState.prestigeLevel > 0) {
+        baseRevenue = Math.floor(baseRevenue * (1 + gameState.prestigeLevel * 0.1));
+      }
+
+      const business = {
+        id: `${templateId}_${gameState.currentCity}_${Date.now()}`,
+        entity_type: 'business',
+        name: template.name,
+        city: gameState.currentCity,
+        owner_type: 'player',
+        owner_id: 'player',
+        business_type: templateId,
+        investment_type: '',
+        level: 1,
+        revenue_per_tick: baseRevenue,
+        cost: cost,
+        upgrade_cost: Math.floor(cost * 1.5),
+        market_value: Math.floor(cost * 1.2),
+        shares_owned: 0,
+        total_shares: 100,
+        partnership_type: '',
+        partnership_terms: '',
+        created_at: new Date().toISOString(),
+        last_updated: new Date().toISOString(),
+        status: 'active',
+        data: JSON.stringify({ city_multiplier: city.multiplier }),
+        risk_level: '',
+        yield_rate: 0,
+        temp_multiplier: 1.0
+      };
+
+      gameState.entities.push(business);
+      saveGame();
+      showToast(`🎉 Purchased ${template.name}!`);
+      closeModal();
+      renderCurrentTab();
+      updateStats();
+    }
+
+    function startGameLoop() {
+      setInterval(() => {
+        const now = Date.now();
+        const deltaTime = (now - gameState.lastTick) / 1000;
+        gameState.lastTick = now;
+
+        let totalIncome = 0;
+        
+        gameState.entities.forEach(entity => {
+          if (entity.entity_type === 'business' && entity.owner_type === 'player') {
+            let income = entity.revenue_per_tick;
+            
+            // Apply staff bonuses
+            const assignedStaff = gameState.staff.filter(s => s.assigned_business === entity.id);
+            assignedStaff.forEach(staff => {
+              const staffType = STAFF_TYPES.find(t => t.id === staff.staff_type);
+              income *= (staffType.efficiency * staff.level);
+            });
+            
+            // Apply temporary multipliers
+            income *= (entity.temp_multiplier || 1.0);
+            
+            totalIncome += income;
+          } else if (entity.entity_type === 'investment') {
+            const dailyReturn = entity.market_value * entity.yield_rate / 365;
+            totalIncome += dailyReturn / (24 * 3600);
+          }
+        });
+
+        gameState.cash += totalIncome * deltaTime;
+        gameState.totalEarnings += totalIncome * deltaTime;
+        updateStats();
+        
+        // Random events
+        if (Math.random() < 0.0001 && gameState.events.length === 0) { // 0.01% chance each tick
+          generateRandomEvent();
+        }
+        
+        // Save periodically
+        if (Math.random() < 0.01) {
+          saveGame();
+        }
+      }, 100);
+
+      setInterval(() => {
+        checkLevelUp();
+        checkAchievements();
+        updateMarketConditions();
+      }, 5000);
+    }
+
+    function updateMarketConditions() {
+      // Slowly change market conditions
+      gameState.marketConditions.techTrend += (Math.random() - 0.5) * 0.02;
+      gameState.marketConditions.techTrend = Math.max(0.5, Math.min(1.5, gameState.marketConditions.techTrend));
+      
+      // Occasionally change economy
+      if (Math.random() < 0.001) {
+        const economies = ['boom', 'stable', 'recession'];
+        gameState.marketConditions.economy = economies[Math.floor(Math.random() * economies.length)];
+        showToast(`📊 Economy changed to: ${gameState.marketConditions.economy.toUpperCase()}`);
+      }
+    }
+
+    function updateStats() {
+      document.getElementById('cash').textContent = `$${formatNumber(Math.floor(gameState.cash))}`;
+      document.getElementById('player-level').textContent = gameState.playerLevel;
+      
+      // Show prestige level
+      const prestigeIndicator = document.getElementById('prestige-level');
+      if (gameState.prestigeLevel > 0) {
+        prestigeIndicator.textContent = gameState.prestigeLevel;
+        prestigeIndicator.style.display = 'flex';
+      } else {
+        prestigeIndicator.style.display = 'none';
+      }
+      
+      let totalIncome = 0;
+      let businessCount = 0;
+      let staffCount = gameState.staff.length;
+      let skillCount = gameState.skills.length;
+      
+      gameState.entities.forEach(entity => {
+        if (entity.entity_type === 'business' && entity.owner_type === 'player') {
+          let income = entity.revenue_per_tick;
+          
+          // Apply staff bonuses
+          const assignedStaff = gameState.staff.filter(s => s.assigned_business === entity.id);
+          assignedStaff.forEach(staff => {
+            const staffType = STAFF_TYPES.find(t => t.id === staff.staff_type);
+            income *= (staffType.efficiency * staff.level);
+          });
+          
+          totalIncome += income;
+          businessCount++;
+        } else if (entity.entity_type === 'investment') {
+          const dailyReturn = entity.market_value * entity.yield_rate / 365;
+          totalIncome += dailyReturn / (24 * 3600);
+        }
+      });
+      
+      document.getElementById('income').textContent = `$${formatNumber(Math.floor(totalIncome))}/s`;
+      document.getElementById('business-count').textContent = businessCount;
+      document.getElementById('staff-count').textContent = staffCount;
+      document.getElementById('skill-count').textContent = skillCount;
+    }
+
+    // Enhanced helper functions
+    function getInvestmentGradient(risk) {
+      switch (risk) {
+        case 'low': return 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
+        case 'medium': return 'linear-gradient(135deg, #ed8936 0%, #dd6b20 100%)';
+        case 'high': return 'linear-gradient(135deg, #f56565 0%, #e53e3e 100%)';
+        default: return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+      }
+    }
+
+    function formatNumber(num) {
+      if (num >= 1000000000000) return (num / 1000000000000).toFixed(1) + 'T';
+      if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'B';
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+      return num.toFixed(0);
+    }
+
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function showAchievementPopup(text) {
+      const popup = document.createElement('div');
+      popup.className = 'achievement-popup';
+      popup.innerHTML = `
+        <div style="font-size: 24px; margin-bottom: 10px;">🏆</div>
+        <div style="font-weight: bold; font-size: 16px;">${text}</div>
+      `;
+      
+      document.body.appendChild(popup);
+      
+      setTimeout(() => {
+        popup.remove();
+      }, 3000);
+    }
+
+    // Placeholder implementations for remaining features
+    function showPurchaseModal(templateId) {
+      const template = BUSINESS_TEMPLATES.find(t => t.id === templateId);
+      const city = CITIES.find(c => c.id === gameState.currentCity);
+      const ownedCount = gameState.entities.filter(e => 
+        e.entity_type === 'business' && 
+        e.business_type === templateId && 
+        e.city === gameState.currentCity &&
+        e.owner_type === 'player'
+      ).length;
+      
+      let cost = Math.floor(template.baseCost * city.multiplier * Math.pow(1.15, ownedCount));
+      let revenue = Math.floor(template.baseRevenue * city.multiplier * Math.pow(1.15, ownedCount));
+
+      // Apply prestige bonuses
+      if (gameState.prestigeLevel > 0) {
+        cost = Math.floor(cost * (1 - gameState.prestigeLevel * 0.05));
+        revenue = Math.floor(revenue * (1 + gameState.prestigeLevel * 0.1));
+      }
+
+      showModal('Purchase Business', `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="font-size: 48px; margin-bottom: 10px;">${template.name.split(' ')[0]}</div>
+          <div style="font-size: 20px; font-weight: bold; margin-bottom: 5px;">${template.name}</div>
+          <div style="color: #666;">in ${city.name}</div>
+        </div>
+        
+        <div style="background: #f7fafc; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+          <div style="margin-bottom: 10px;">💵 <strong>Cost:</strong> $${formatNumber(cost)}</div>
+          <div style="margin-bottom: 10px;">📊 <strong>Revenue:</strong> $${formatNumber(revenue)}/sec</div>
+          <div style="margin-bottom: 10px;">🌍 <strong>City Bonus:</strong> ${city.multiplier}x</div>
+          <div style="margin-bottom: 10px;">👥 <strong>Staff Slots:</strong> ${template.staffSlots}</div>
+          <div>🏢 <strong>You own:</strong> ${ownedCount} of this type</div>
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-secondary" onclick="closeModal()" style="flex: 1;">Cancel</button>
+          <button class="btn btn-primary" onclick="purchaseBusiness('${templateId}')" style="flex: 1;" 
+            ${gameState.cash < cost ? 'disabled' : ''}>
+            ${gameState.cash < cost ? 'Not Enough Cash' : 'Purchase'}
+          </button>
+        </div>
+      `);
+    }
+
+    function showInvestmentModal(investment, currentYield) {
+      showModal('Investment Opportunity', `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="font-size: 48px; margin-bottom: 10px;">${investment.icon}</div>
+          <div style="font-size: 20px; font-weight: bold; margin-bottom: 5px;">${investment.name}</div>
+          <div style="color: ${investment.risk === 'high' ? '#f56565' : investment.risk === 'medium' ? '#ed8936' : '#48bb78'};">
+            ${investment.risk.toUpperCase()} RISK
+          </div>
+        </div>
+        
+        <div style="background: #f7fafc; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+          <div style="margin-bottom: 10px;">📈 <strong>Current Yield:</strong> ${(currentYield * 100).toFixed(1)}%</div>
+          <div style="margin-bottom: 10px;">💰 <strong>Minimum Investment:</strong> $${formatNumber(investment.minInvest)}</div>
+          <div style="margin-bottom: 10px;">📊 <strong>Volatility:</strong> ${(investment.volatility * 100).toFixed(0)}%</div>
+          <div>⚠️ <strong>Risk Level:</strong> ${investment.risk}</div>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: bold;">Investment Amount:</label>
+          <input type="number" id="investment-amount" placeholder="Enter amount" 
+            style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 16px;"
+            min="${investment.minInvest}" step="1000" value="${investment.minInvest}">
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-secondary" onclick="closeModal()" style="flex: 1;">Cancel</button>
+          <button class="btn btn-primary" onclick="makeInvestment('${investment.id}', ${currentYield})" style="flex: 1;">
+            Invest Now
+          </button>
+        </div>
+      `);
+    }
+
+    function makeInvestment(investmentTypeId, currentYield) {
+      const investmentType = INVESTMENT_TYPES.find(t => t.id === investmentTypeId);
+      const amount = parseInt(document.getElementById('investment-amount').value);
+
+      if (!amount || amount < investmentType.minInvest) {
+        showToast(`Minimum investment is $${formatNumber(investmentType.minInvest)}`);
+        return;
+      }
+
+      if (gameState.cash < amount) {
+        showToast('Not enough cash!');
+        return;
+      }
+
+      gameState.cash -= amount;
+      gameState.experience += 5;
+
+      const investment = {
+        id: `inv_${investmentTypeId}_${Date.now()}`,
+        entity_type: 'investment',
+        name: investmentType.name,
+        city: '',
+        owner_type: 'player',
+        owner_id: 'player',
+        business_type: '',
+        investment_type: investmentTypeId,
+        level: 1,
+        revenue_per_tick: 0,
+        cost: amount,
+        upgrade_cost: 0,
+        market_value: amount,
+        shares_owned: 0,
+        total_shares: 0,
+        partnership_type: '',
+        partnership_terms: '',
+        created_at: new Date().toISOString(),
+        last_updated: new Date().toISOString(),
+        status: 'active',
+        data: JSON.stringify({ investment_type: investmentTypeId }),
+        risk_level: investmentType.risk,
+        yield_rate: currentYield
+      };
+
+      gameState.entities.push(investment);
+      saveGame();
+      showToast(`💰 Invested $${formatNumber(amount)} in ${investmentType.name}!`);
+      closeModal();
+      renderCurrentTab();
+      updateStats();
+    }
+
+    // Additional helper functions
+    function showModal(title, content) {
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.id = 'current-modal';
+      modal.innerHTML = `
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">${title}</h2>
+            <button class="modal-close" onclick="closeModal()">×</button>
+          </div>
+          <div class="modal-body">
+            ${content}
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('current-modal');
+      if (modal) {
+        modal.remove();
+      }
+    }
+
+    function showQuickActions() {
+      showModal('Quick Actions', `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <button class="btn btn-primary" onclick="autoInvest(); closeModal();">
+            🤖 Auto Invest
+          </button>
+          <button class="btn btn-success" onclick="collectAllRevenue(); closeModal();">
+            💰 Collect All
+          </button>
+          <button class="btn btn-warning" onclick="upgradeAll(); closeModal();">
+            ⬆️ Upgrade All
+          </button>
+          <button class="btn btn-secondary" onclick="showStats(); closeModal();">
+            📊 Statistics
+          </button>
+          <button class="btn btn-primary" onclick="autoHireStaff(); closeModal();">
+            👥 Auto Hire
+          </button>
+          <button class="btn btn-success" onclick="optimizePortfolio(); closeModal();">
+            📈 Optimize
+          </button>
+        </div>
+      `);
+    }
+
+    // Implement remaining placeholder functions
+    function upgradeBusiness(businessId) {
+      const business = gameState.entities.find(e => e.id === businessId);
+      if (!business || gameState.cash < business.upgrade_cost) {
+        showToast('Not enough cash!');
+        return;
+      }
+
+      gameState.cash -= business.upgrade_cost;
+      gameState.experience += 15;
+      business.level += 1;
+      business.revenue_per_tick = Math.floor(business.revenue_per_tick * 1.5);
+      business.upgrade_cost = Math.floor(business.upgrade_cost * 1.5);
+      business.market_value = Math.floor(business.market_value * 1.3);
+      business.last_updated = new Date().toISOString();
+
+      saveGame();
+      showToast(`⬆️ Upgraded ${business.name} to level ${business.level}!`);
+      renderCurrentTab();
+      updateStats();
+    }
+
+    function calculatePortfolioValue() {
+      return gameState.entities.reduce((total, entity) => {
+        if (entity.entity_type === 'business' && entity.owner_type === 'player') {
+          return total + entity.market_value;
+        } else if (entity.entity_type === 'investment') {
+          return total + entity.market_value;
+        }
+        return total;
+      }, 0) + gameState.cash;
+    }
+
+    function calculateMonthlyIncome() {
+      return gameState.entities.reduce((total, entity) => {
+        if (entity.entity_type === 'business' && entity.owner_type === 'player') {
+          return total + (entity.revenue_per_tick * 30 * 24 * 3600);
+        } else if (entity.entity_type === 'investment') {
+          return total + (entity.market_value * entity.yield_rate / 12);
+        }
+        return total;
+      }, 0);
+    }
+
+    function checkLevelUp() {
+      const requiredExp = gameState.playerLevel * 100;
+      if (gameState.experience >= requiredExp) {
+        gameState.playerLevel++;
+        gameState.experience = 0;
+        
+        showAchievementPopup(`🎉 Level Up! You're now level ${gameState.playerLevel}!`);
+        renderCityGrid();
+        updateStats();
+        saveGame();
+      }
+    }
+
+    function checkAchievements() {
+      const newAchievements = [];
+
+      const myBusinesses = gameState.entities.filter(e => e.entity_type === 'business' && e.owner_type === 'player');
+      const investments = gameState.entities.filter(e => e.entity_type === 'investment');
+
+      if (myBusinesses.length >= 1 && !gameState.achievements.includes('first_business')) {
+        gameState.achievements.push('first_business');
+        newAchievements.push('🏢 First Business Owner!');
+      }
+
+      if (gameState.staff.length >= 1 && !gameState.achievements.includes('first_hire')) {
+        gameState.achievements.push('first_hire');
+        newAchievements.push('👥 First Employee Hired!');
+      }
+
+      if (gameState.prestigeLevel >= 1 && !gameState.achievements.includes('first_prestige')) {
+        gameState.achievements.push('first_prestige');
+        newAchievements.push('🌟 Went Public!');
+      }
+
+      if (gameState.cash >= 1000000 && !gameState.achievements.includes('millionaire')) {
+        gameState.achievements.push('millionaire');
+        newAchievements.push('💰 Millionaire Status!');
+      }
+
+      if (newAchievements.length > 0) {
+        saveGame();
+        newAchievements.forEach(achievement => {
+          showAchievementPopup(achievement);
+        });
+      }
+    }
+
+    function renderYourInvestments() {
+      const container = document.getElementById('your-investments');
+      const investments = gameState.entities.filter(e => e.entity_type === 'investment');
+
+      if (investments.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📊</div>
+            <div>No investments yet.<br>Diversify your portfolio!</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+      investments.forEach(investment => {
+        const investmentType = INVESTMENT_TYPES.find(t => t.id === investment.investment_type);
+        const dailyReturn = investment.market_value * investment.yield_rate / 365;
+        
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">${investmentType.icon} ${investmentType.name}</div>
+            <div class="card-badge risk-${investment.risk_level}">${investment.risk_level}</div>
+          </div>
+          <div class="card-info">
+            💰 Invested: $${formatNumber(investment.market_value)}<br>
+            📈 Daily Return: $${formatNumber(dailyReturn)}<br>
+            🎯 APY: ${(investment.yield_rate * 100).toFixed(1)}%
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-success" onclick="showToast('Feature coming soon!')">
+              Add More
+            </button>
+            <button class="btn btn-warning" onclick="showToast('Feature coming soon!')">
+              Withdraw
+            </button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderMarketBusinesses(businesses) {
+      const container = document.getElementById('market-businesses');
+      
+      if (businesses.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🏪</div>
+            <div>No market opportunities in this city yet.</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+      businesses.forEach(business => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">${business.name}</div>
+            <div class="card-badge">Lv.${business.level}</div>
+          </div>
+          <div class="card-info">
+            📊 Revenue: $${formatNumber(business.revenue_per_tick)}/sec<br>
+            💰 Value: $${formatNumber(business.market_value)}
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-warning" onclick="showToast('Feature coming soon!')">
+              Invest
+            </button>
+            <button class="btn btn-success" onclick="showToast('Feature coming soon!')">
+              Partner
+            </button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderPortfolioBreakdown() {
+      const container = document.getElementById('portfolio-breakdown');
+      const businesses = gameState.entities.filter(e => e.entity_type === 'business' && e.owner_type === 'player');
+      const investments = gameState.entities.filter(e => e.entity_type === 'investment');
+
+      container.innerHTML = '';
+
+      if (businesses.length > 0) {
+        const businessValue = businesses.reduce((sum, b) => sum + b.market_value, 0);
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">🏢 Your Businesses</div>
+            <div class="card-badge">${businesses.length}</div>
+          </div>
+          <div class="card-info">
+            💰 Total Value: $${formatNumber(businessValue)}<br>
+            📊 Monthly Revenue: $${formatNumber(businesses.reduce((sum, b) => sum + b.revenue_per_tick * 30 * 24 * 3600, 0))}
+          </div>
+        `;
+        container.appendChild(div);
+      }
+
+      if (investments.length > 0) {
+        const investmentValue = investments.reduce((sum, i) => sum + i.market_value, 0);
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">📊 Investments</div>
+            <div class="card-badge">${investments.length}</div>
+          </div>
+          <div class="card-info">
+            💰 Total Invested: $${formatNumber(investmentValue)}<br>
+            📈 Monthly Returns: $${formatNumber(investments.reduce((sum, i) => sum + (i.market_value * i.yield_rate / 12), 0))}
+          </div>
+        `;
+        container.appendChild(div);
+      }
+
+      if (businesses.length === 0 && investments.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">💼</div>
+            <div>Your portfolio is empty.<br>Start building your empire!</div>
+          </div>
+        `;
+      }
+    }
+
+    function showUnlockGuidance(city) {
+      const levelsNeeded = city.unlockLevel - gameState.playerLevel;
+      const expNeeded = (gameState.playerLevel * 100) - gameState.experience;
+      
+      showModal(`🔒 ${city.name} Locked`, `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="font-size: 48px; margin-bottom: 10px;">${city.emoji}</div>
+          <div style="font-size: 20px; font-weight: bold; margin-bottom: 5px;">${city.name}</div>
+          <div style="color: #f56565; font-weight: bold;">Requires Level ${city.unlockLevel}</div>
+        </div>
+        
+        <div style="background: #f7fafc; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+          <div style="margin-bottom: 15px;">
+            <div style="font-weight: bold; margin-bottom: 5px;">📊 Your Progress:</div>
+            <div>Current Level: ${gameState.playerLevel}</div>
+            <div>Experience: ${gameState.experience}/100</div>
+            <div style="color: #f56565;">Need ${levelsNeeded} more level${levelsNeeded > 1 ? 's' : ''}</div>
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <div style="font-weight: bold; margin-bottom: 10px;">🚀 How to Level Up Fast:</div>
+            <div style="margin-bottom: 8px;">• 🏢 Buy businesses (+10 XP each)</div>
+            <div style="margin-bottom: 8px;">• ⬆️ Upgrade businesses (+15 XP each)</div>
+            <div style="margin-bottom: 8px;">• 👥 Hire staff (+8 XP each)</div>
+            <div style="margin-bottom: 8px;">• 🔬 Start research (+25 XP each)</div>
+          </div>
+          
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px; border-radius: 8px; font-size: 14px;">
+            💡 <strong>Pro Tip:</strong> Focus on buying and upgrading businesses for maximum XP gain!
+          </div>
+        </div>
+        
+        <div style="text-align: center;">
+          <button class="btn btn-primary" onclick="closeModal(); switchTab('businesses');" style="width: 100%;">
+            Start Building Empire 🚀
+          </button>
+        </div>
+      `);
+    }
+
+    // Quick action implementations
+    function autoInvest() {
+      const availableCash = gameState.cash * 0.1;
+      const bestInvestment = INVESTMENT_TYPES.find(i => i.minInvest <= availableCash);
+      
+      if (bestInvestment && availableCash >= bestInvestment.minInvest) {
+        gameState.cash -= Math.floor(availableCash);
+        gameState.experience += 5;
+
+        const investment = {
+          id: `inv_${bestInvestment.id}_${Date.now()}`,
+          entity_type: 'investment',
+          name: bestInvestment.name,
+          city: '',
+          owner_type: 'player',
+          owner_id: 'player',
+          business_type: '',
+          investment_type: bestInvestment.id,
+          level: 1,
+          revenue_per_tick: 0,
+          cost: Math.floor(availableCash),
+          upgrade_cost: 0,
+          market_value: Math.floor(availableCash),
+          shares_owned: 0,
+          total_shares: 0,
+          partnership_type: '',
+          partnership_terms: '',
+          created_at: new Date().toISOString(),
+          last_updated: new Date().toISOString(),
+          status: 'active',
+          data: JSON.stringify({ investment_type: bestInvestment.id }),
+          risk_level: bestInvestment.risk,
+          yield_rate: bestInvestment.yield
+        };
+
+        gameState.entities.push(investment);
+        saveGame();
+        showToast(`🤖 Auto-invested $${formatNumber(Math.floor(availableCash))} in ${bestInvestment.name}!`);
+        renderCurrentTab();
+        updateStats();
+      } else {
+        showToast('Not enough cash for auto-invest');
+      }
+    }
+
+    function collectAllRevenue() {
+      const totalRevenue = gameState.entities.reduce((sum, e) => {
+        if (e.entity_type === 'business' && e.owner_type === 'player') {
+          return sum + e.revenue_per_tick * 10;
+        }
+        return sum;
+      }, 0);
+      
+      if (totalRevenue > 0) {
+        gameState.cash += totalRevenue;
+        saveGame();
+        showToast(`💰 Collected $${formatNumber(totalRevenue)} in revenue!`);
+        updateStats();
+      } else {
+        showToast('No revenue to collect');
+      }
+    }
+
+    function upgradeAll() {
+      const businesses = gameState.entities.filter(e => 
+        e.entity_type === 'business' && 
+        e.owner_type === 'player' && 
+        gameState.cash >= e.upgrade_cost
+      );
+      
+      if (businesses.length === 0) {
+        showToast('No businesses can be upgraded');
+        return;
+      }
+      
+      let upgraded = 0;
+      for (const business of businesses.slice(0, 3)) {
+        if (gameState.cash >= business.upgrade_cost) {
+          gameState.cash -= business.upgrade_cost;
+          gameState.experience += 15;
+          business.level += 1;
+          business.revenue_per_tick = Math.floor(business.revenue_per_tick * 1.5);
+          business.upgrade_cost = Math.floor(business.upgrade_cost * 1.5);
+          business.market_value = Math.floor(business.market_value * 1.3);
+          business.last_updated = new Date().toISOString();
+          upgraded++;
+        }
+      }
+      
+      if (upgraded > 0) {
+        saveGame();
+        showToast(`⬆️ Upgraded ${upgraded} businesses!`);
+        renderCurrentTab();
+        updateStats();
+      }
+    }
+
+    function showStats() {
+      const totalValue = calculatePortfolioValue();
+      const monthlyIncome = calculateMonthlyIncome();
+      
+      showModal('Statistics', `
+        <div style="text-align: center;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div style="background: #f7fafc; padding: 15px; border-radius: 10px;">
+              <div style="font-size: 24px; font-weight: bold; color: #667eea;">$${formatNumber(totalValue)}</div>
+              <div style="font-size: 12px; color: #666;">Total Portfolio Value</div>
+            </div>
+            <div style="background: #f7fafc; padding: 15px; border-radius: 10px;">
+              <div style="font-size: 24px; font-weight: bold; color: #48bb78;">$${formatNumber(monthlyIncome)}</div>
+              <div style="font-size: 12px; color: #666;">Monthly Income</div>
+            </div>
+          </div>
+          
+          <div style="background: #f7fafc; padding: 15px; border-radius: 10px; text-align: left;">
+            <div style="margin-bottom: 10px;">🏆 <strong>Level:</strong> ${gameState.playerLevel}</div>
+            <div style="margin-bottom: 10px;">⭐ <strong>Experience:</strong> ${gameState.experience}/100</div>
+            <div style="margin-bottom: 10px;">🌟 <strong>Prestige Level:</strong> ${gameState.prestigeLevel}</div>
+            <div style="margin-bottom: 10px;">💰 <strong>Total Earnings:</strong> $${formatNumber(gameState.totalEarnings)}</div>
+            <div style="margin-bottom: 10px;">👥 <strong>Staff Hired:</strong> ${gameState.staff.length}</div>
+            <div>🏆 <strong>Achievements:</strong> ${gameState.achievements.length}</div>
+          </div>
+        </div>
+      `);
+    }
+
+    function autoHireStaff() {
+      const availableStaff = STAFF_TYPES.filter(staff => 
+        !gameState.staff.some(s => s.staff_type === staff.id) && 
+        gameState.cash >= staff.cost
+      );
+      
+      if (availableStaff.length > 0) {
+        const staff = availableStaff[0];
+        hireStaff(staff.id);
+      } else {
+        showToast('No staff available to hire');
+      }
+    }
+
+    function optimizePortfolio() {
+      showToast('🔧 Portfolio optimization coming soon!');
+    }
+
+    function manageStaff(businessId) {
+      showToast('👥 Staff management coming soon!');
+    }
+
+    function showSellModal(businessId) {
+      showToast('💰 Business selling coming soon!');
+    }
+
+    function showLoanModal(maxLoan, rate) {
+      showToast('🏦 Loan system coming soon!');
+    }
+
+    function challengeCompetitor(competitorId) {
+      showToast('⚔️ Competitor challenges coming soon!');
+    }
+
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99b62e3557ffb9ff',t:'MTc2MjYxNjU1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
